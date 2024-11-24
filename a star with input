@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX 100
+#define INF 9999
+
+int graph[MAX][MAX], visited[MAX], gCost[MAX], fCost[MAX], n;
+int heuristic[MAX], parent[MAX];
+
+int findMinFcost() {
+    int min = INF, minIndex = -1;
+    for (int i = 0; i < n; i++) {
+        if (!visited[i] && fCost[i] < min) {
+            min = fCost[i];
+            minIndex = i;
+        }
+    }
+    return minIndex;
+}
+
+void printPath(int start, int goal) {
+    if (goal == start) {
+        printf("%d ", start);
+        return;
+    }
+    printPath(start, parent[goal]);
+    printf("-> %d ", goal);
+}
+
+void AStar(int start, int goal) {
+    // Initialize
+    for (int i = 0; i < n; i++) {
+        gCost[i] = INF;
+        fCost[i] = INF;
+        parent[i] = -1;
+        visited[i] = 0;
+    }
+
+    gCost[start] = 0;
+    fCost[start] = heuristic[start];
+
+    while (1) {
+        int currentNode = findMinFcost();
+        if (currentNode == -1) {
+            printf("\nNo Path Found.\n");
+            return;
+        }
+        if (currentNode == goal) {
+            printf("\nPath found: ");
+            printPath(start, goal);
+            printf("\nGoal reached: %d\n", goal);
+            return;
+        }
+
+        visited[currentNode] = 1;
+
+        for (int neighbor = 0; neighbor < n; neighbor++) {
+            if (graph[currentNode][neighbor] != INF && !visited[neighbor]) {
+                int tentativeGCost = gCost[currentNode] + graph[currentNode][neighbor];
+                if (tentativeGCost < gCost[neighbor]) {
+                    gCost[neighbor] = tentativeGCost;
+                    fCost[neighbor] = gCost[neighbor] + heuristic[neighbor];
+                    parent[neighbor] = currentNode;
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    printf("Enter the number of nodes: ");
+    scanf("%d", &n);
+
+    printf("Enter the adjacency matrix (use %d for infinity):\n", INF);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    printf("Enter heuristic values for each node:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &heuristic[i]);
+    }
+
+    int start, goal;
+    printf("Enter the start node: ");
+    scanf("%d", &start);
+    printf("Enter the goal node: ");
+    scanf("%d", &goal);
+
+    AStar(start, goal);
+
+    return 0;
+}
