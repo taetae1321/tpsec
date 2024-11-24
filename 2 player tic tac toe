@@ -1,0 +1,107 @@
+#include <stdio.h>
+
+#define SIZE 3
+
+char board[SIZE][SIZE]; // The Tic-Tac-Toe board
+
+// Function to initialize the board with empty cells
+void initializeBoard() {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            board[i][j] = ' ';
+        }
+    }
+}
+
+// Function to display the board
+void displayBoard() {
+    printf("\n");
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            printf(" %c ", board[i][j]);
+            if (j < SIZE - 1) printf("|");
+        }
+        printf("\n");
+        if (i < SIZE - 1) {
+            for (int j = 0; j < SIZE; j++) {
+                printf("---");
+                if (j < SIZE - 1) printf("+");
+            }
+            printf("\n");
+        }
+    }
+    printf("\n");
+}
+
+// Function to check if a player has won
+int checkWin(char mark) {
+    // Check rows and columns
+    for (int i = 0; i < SIZE; i++) {
+        if ((board[i][0] == mark && board[i][1] == mark && board[i][2] == mark) || // Row
+            (board[0][i] == mark && board[1][i] == mark && board[2][i] == mark)) { // Column
+            return 1;
+        }
+    }
+    // Check diagonals
+    if ((board[0][0] == mark && board[1][1] == mark && board[2][2] == mark) || // Main diagonal
+        (board[0][2] == mark && board[1][1] == mark && board[2][0] == mark)) { // Anti-diagonal
+        return 1;
+    }
+    return 0;
+}
+
+// Function to check if the board is full (draw)
+int isDraw() {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (board[i][j] == ' ') return 0;
+        }
+    }
+    return 1;
+}
+
+// Function to play the game
+void playGame() {
+    int row, col, player = 1;
+    char mark;
+
+    while (1) {
+        displayBoard();
+        mark = (player == 1) ? 'X' : 'O';
+        printf("Player %d (%c), enter your move (row and column): ", player, mark);
+        scanf("%d %d", &row, &col);
+
+        // Validate the input
+        if (row < 1 || row > SIZE || col < 1 || col > SIZE || board[row - 1][col - 1] != ' ') {
+            printf("Invalid move. Try again.\n");
+            continue;
+        }
+
+        // Update the board
+        board[row - 1][col - 1] = mark;
+
+        // Check for a win
+        if (checkWin(mark)) {
+            displayBoard();
+            printf("Player %d (%c) wins!\n", player, mark);
+            break;
+        }
+
+        // Check for a draw
+        if (isDraw()) {
+            displayBoard();
+            printf("It's a draw!\n");
+            break;
+        }
+
+        // Switch player
+        player = (player == 1) ? 2 : 1;
+    }
+}
+
+int main() {
+    printf("Welcome to Tic-Tac-Toe!\n");
+    initializeBoard();
+    playGame();
+    return 0;
+}
