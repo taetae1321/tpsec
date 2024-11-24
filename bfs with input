@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX 100
+
+void bfs(int adj[MAX][MAX], int V, int s, int goal) {
+    int q[MAX], front = 0, rear = 0;
+    bool visited[MAX] = { false };
+
+    visited[s] = true;
+    q[rear++] = s;
+
+    while (front < rear) {
+        int curr = q[front++];
+        printf("%d ", curr);
+
+        // Check if the current node is the goal
+        if (curr == goal) {
+            printf("\nGoal node %d reached!\n", goal);
+            return; // Exit BFS once the goal is found
+        }
+
+        for (int i = 0; i < V; i++) {
+            if (adj[curr][i] == 1 && !visited[i]) {
+                visited[i] = true;
+                q[rear++] = i;
+            }
+        }
+    }
+    printf("\nGoal node %d not reached in the graph.\n", goal);
+}
+
+void addEdge(int adj[MAX][MAX], int u, int v) {
+    adj[u][v] = 1;
+    adj[v][u] = 1;
+}
+
+int main() {
+    int V, E;
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+
+    int adj[MAX][MAX] = {0};
+
+    printf("Enter number of edges: ");
+    scanf("%d", &E);
+
+    for (int i = 0; i < E; i++) {
+        int u, v;
+        printf("Enter edge %d (format: u v): ", i+1);
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+    }
+
+    int start, goal;
+    printf("Enter starting vertex for BFS: ");
+    scanf("%d", &start);
+    printf("Enter goal vertex for BFS: ");
+    scanf("%d", &goal);
+
+    printf("BFS starting from vertex %d:\n", start);
+    bfs(adj, V, start, goal);
+
+    return 0;
+}
